@@ -1,0 +1,37 @@
+[
+    {
+        "Probe Type": "PD",
+        "Direction": "Forward",
+        "Probe Name": "InputPD",
+        "Component/Port1": "Split1/2",
+        "Component/Port2": ""
+    },
+    {
+        "Probe Type": "PD",
+        "Direction": "Forward",
+        "Probe Name": "OutputPD",
+        "Component/Port1": "Split2/2",
+        "Component/Port2": ""
+    },
+    {
+        "Probe Type": "Gain",
+        "Direction": "Forward",
+        "Probe Name": "AmplifierGain",
+        "Component/Port1": "SignalIn/1",
+        "Component/Port2": "ConnectorOut/1"
+    },
+    {
+        "Probe Type": "NF",
+        "Direction": "Forward",
+        "Probe Name": "AmplifierNF",
+        "Component/Port1": "SignalIn/1",
+        "Component/Port2": "ConnectorOut/1"
+    },
+    {
+        "Probe Type": "Gain",
+        "Direction": "Forward",
+        "Probe Name": "Coil1Gain",
+        "Component/Port1": "WDM1/1",
+        "Component/Port2": "EDF1/1"
+    }
+]
