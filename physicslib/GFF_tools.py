@@ -14,3 +14,4 @@ def Load_GFF_data(WL_sig, WL_pump, WL_ase):
     Loss = np.squeeze(data[['Loss']] )
     Loss_interpolation = interp1d(Wavelength, Loss, kind='linear')
     # Put zero all the entries that are not availible in the excel sheet. (Aidan)
+    Loss_sig
