@@ -10,7 +10,7 @@ def Get_Excel_file(gff_type):
 def Load_GFF_data(WL_sig, WL_pump, WL_ase):
     file = r"gff\GFF2.xlsx"   # Will be remplaced by Get_Excel_file
     data = pd.read_excel(file,sheet_name='Loss')
-    Wavelenght  = np.squeeze( data[['Wavelength']] )
+    Wavelength  = np.squeeze( data[['Wavelength']] )
     Loss = np.squeeze(data[['Loss']] )
-    Loss_interpolation = interp1d(Wavelenght, Loss, kind='linear')
-    # Put zero all the entries that are not availible in the excel sheet. (Aiden)
+    Loss_interpolation = interp1d(Wavelength, Loss, kind='linear')
+    # Put zero all the entries that are not availible in the excel sheet. (Aidan)
