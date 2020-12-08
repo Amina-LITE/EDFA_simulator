@@ -11,7 +11,7 @@ def gff_physics(gffobj):
     # Gff loss might also need to be converted from dB to linear before multiplying 
     # Need to fix GFF loss shape
     # Both regular loss and GFF loss should be added at this stage 
-    
+    #Check if multiply is the correct operation or maybe its addition for the loss
     InputForward    = gffobj.getInputForward()
     InputBackward   = gffobj.getInputBackward()
 
