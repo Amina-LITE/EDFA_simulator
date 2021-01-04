@@ -5,4 +5,8 @@ from os.path import join, split, isdir
 from Settings import * 
 
 
-def 
+def listSplitter(concatList):
+    sigList=concatList[0:100]
+    pump=concatList[100]
+    aseList=concatList[101:]
+    return sigList,pump,aseList
