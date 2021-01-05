@@ -83,7 +83,7 @@ def gainProbe (concatList,concat2,sigType=0):
         return aseGainList, aseWaveList
 
 
-def Calculate_NF(concatList) :#not tested 
+def noiseFloorProbe(concatList) :#not tested 
     tempList=listSplitter(concatList)
     WL_sig=tempList[3]
     WL_ase=tempList[5]
