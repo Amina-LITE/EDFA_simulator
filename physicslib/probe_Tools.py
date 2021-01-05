@@ -3,8 +3,21 @@ import pandas as pd
 import Settings as settings
 from os.path import join, split, isdir
 from scipy.interpolate import interp1d
+import new_amp as ap
 
 
+def Get_Probe_Spectrum(Probe_name, amp): 
+    print(Probe_name)
+    print(ap.OpticalProbe)
+    #From Probe name, get  'Port1_Component_Name' ,  'Port2_Component_Name'
+    #From Port_component name, get index for amp 
+    # From amp[index], get output forward 
+    input_sig = amp[0]
+    P_in = input_sig.getOutputForward()
+    output_sig = amp[-1]
+    P_out = output_sig.getOutputForward()
+
+    return 
 
 
 def listSplitter(concatList,concatList2=None):
@@ -51,7 +64,7 @@ def gainProbe (concatList,concat2,sigType=0):
     if sigType==0:  #signal gain
         tempList=listSplitter(concatList,concat2)
         probeSigList1=tempList[0]
-        probeSigList2=tempList=[3]
+        probeSigList2=tempList[3]
         sigWaveList=tempList[6]
         sigGainList=[]
 
