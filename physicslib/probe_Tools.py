@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import Settings as settings
 from os.path import join, split, isdir
+from scipy.interpolate import interp1d
+
 
 
 
@@ -79,3 +81,45 @@ def gainProbe (concatList,concat2,sigType=0):
             aseGainList.append(probeAseList2[i]/probeAseList1[i])
 
         return aseGainList, aseWaveList
+
+
+def Calculate_NF(concatList) :#not tested 
+    tempList=listSplitter(concatList)
+    WL_sig=tempList[3]
+    WL_ase=tempList[5]
+    PoutSi=tempList[0]
+    PoutEr=tempList[2] 
+
+    hp = 6.62607004e-34 # Planck constant m2kg/s
+    c  = 299792458      # Speed of light in vacuum m/s
+    
+    N_sig = int(0.5*PoutSi.shape[0])
+    N_ase = int(0.5*PoutEr.shape[0])
+
+    GainSig      = PoutSi[0:N_sig,-1]/PoutSi[0:N_sig,0]#this is wrong a tiny bit as it is for a erbium dope amp you need access to input signal of amp
+
+    NU_sig       = c/(WL_sig*1e-9)    # Sig grid Frquency array  # Delta nu array @ Sig wavelebgth for NF calulation. 
+    DNU_sig      = np.full((N_sig), 0.00)
+    DNU_sig[0]   = NU_sig[0]-NU_sig[1]
+    DNU_sig[1:]  = -np.diff(NU_sig)   
+    
+    NU_ase    = c/(WL_ase*1e-9)    # ASE grid Frquency array
+    # Delta nu array for ASE calulation. It is only calculated at ASE Wavelengths
+    DNU_ase = np.full((N_ase), 0.00)
+    DNU_ase[0] = NU_ase[0]-NU_ase[1]
+    DNU_ase[1:] = -np.diff(NU_ase)
+
+    PASE_in  = PoutEr[0:N_ase,0]/DNU_ase      # W/Hz
+    PASE_out = PoutEr[0:N_ase,-1]/DNU_ase     # W/Hz
+    PASE_in_interp  = interp1d(WL_ase, PASE_in,  kind='linear')   # W/Hz
+    PASE_out_interp = interp1d(WL_ase, PASE_out, kind='linear')   # W/Hz
+    PASE_in_SigGrid    = PASE_in_interp(WL_sig)      # W/Hz
+    PASE_out_SigGrid   = PASE_out_interp(WL_sig)     # W/Hz
+    PASE_in_SigGrid    = PASE_in_SigGrid *DNU_sig    # Within Signal bandwidth
+    PASE_out_SigGrid   = PASE_out_SigGrid*DNU_sig    # Within Signal bandwidth
+    # NF = Pase_added / Gsig*h*v*dv + 1 / Gsig        
+    gainhnudeltanu = hp*np.multiply(np.multiply(GainSig,DNU_sig),NU_sig) 
+    PASE_added_SigGrid = PASE_out_SigGrid - PASE_in_SigGrid*GainSig
+    NF = PASE_added_SigGrid/gainhnudeltanu + 1/GainSig
+    
+    return NF,gainhnudeltanu
