@@ -13,23 +13,33 @@ def Get_Probe_Spectrum(Probe_name, amp):
     #From Port_component name, get index for amp 
     # From amp[index], get output forward 
     #p1 refers to port 1, p2 refers to port 2 
-
+    Probe_name = 'Coil1Gain' 
     PD_dict = dict((x[2], x[3:]) for x in ap.OpticalProbe)
     cmps = ap.OpticalComponent
     if Probe_name in PD_dict: 
+        #Port 1 
         c_p1 = PD_dict.get(Probe_name)[0]
-        c_p2 = PD_dict.get(Probe_name)[1]     
         try:        
             result_p1 = [element for element in cmps if element[1] == c_p1]
             index_p1 = cmps.index(result_p1[0]) + 1 
         except: 
             index_p1 = 0     
-        result_p2 = [element for element in cmps if element[1] == c_p2]
-        index_p2 = cmps.index(result_p2[0]) + 1 
+
         Port_1_sig = amp[index_p1]
         Power_p1 = Port_1_sig.getOutputForward()
-        Port_2_sig = amp[index_p2]
-        Power_p2 = Port_2_sig.getOutputForward()
+
+        #Port 2 
+        Power_p2 = []
+        c_p2 = PD_dict.get(Probe_name)[1]   
+        if c_p2 != '' : 
+            result_p2 = [element for element in cmps if element[1] == c_p2]
+            index_p2 = cmps.index(result_p2[0]) + 1 
+            Port_2_sig = amp[index_p2]
+            Power_p2 = Port_2_sig.getOutputForward()
+        elif  c_p2 == '' : 
+            split_out = Port_1_sig.getTapOutput()
+            split_ratio = Port_1_sig.getSplitRatio2()
+            Power_p1 = split_out*split_ratio # Need to check correct ratio and opration (unit?)
     else: 
         print('Probe not defined')    
     

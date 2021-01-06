@@ -106,6 +106,6 @@ OpticalPump = [Pump1, Pump2, Pump3, Pump4]
 OpticalProbe =    [
 ['Gain'   ,   'Forward'    ,  'AmplifierGain' ,  'SignalIn' ,  'ConnectorOut'     ], 
 ['Gain'   ,   'Forward'    ,  'Coil1Gain'     ,  'WDM1'        ,   'EDF1'            ],
-['PD'     ,   'Forward'    ,  'InputPD'       ,  'Split1/2'    ,   ''                ],
+['PD'     ,   'Forward'    ,  'InputPD'       ,  'Split1'    ,   ''                ],
 ['NF'     ,   'Forward'    ,  'AmplifierNF'   ,  'SignalIn'  ,   'ConnectorOut'  ]
 ]
