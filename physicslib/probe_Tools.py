@@ -5,8 +5,6 @@ from os.path import join, split, isdir
 from scipy.interpolate import interp1d
 
 
-
-
 def listSplitter(concatList,concatList2=None):
     sigList=concatList[0:settings.N_sig]
     pumpList=concatList[settings.N_sig:settings.N_pump]
@@ -83,12 +81,12 @@ def gainProbe (concatList,concat2,sigType=0):
         return aseGainList, aseWaveList
 
 
-def noiseFloorProbe(concatList) :#not tested 
-    tempList=listSplitter(concatList)
-    WL_sig=tempList[3]
-    WL_ase=tempList[5]
-    PoutSi=tempList[0]
-    PoutEr=tempList[2] 
+def noiseFigureProbe(inputSignal,outputSignal) :#not tested 
+    tempList=listSplitter(inputSignal,outputSignal)
+    WL_sig=tempList[6]
+    WL_ase=tempList[8]
+    PoutSi=tempList[3]
+    PoutEr=tempList[5] 
 
     hp = 6.62607004e-34 # Planck constant m2kg/s
     c  = 299792458      # Speed of light in vacuum m/s
@@ -96,7 +94,7 @@ def noiseFloorProbe(concatList) :#not tested
     N_sig = int(0.5*PoutSi.shape[0])
     N_ase = int(0.5*PoutEr.shape[0])
 
-    GainSig      = PoutSi[0:N_sig,-1]/PoutSi[0:N_sig,0]#this is wrong a tiny bit as it is for a erbium dope amp you need access to input signal of amp
+    GainSig      =  gainProbe(inputSignal,outputSignal)[0]
 
     NU_sig       = c/(WL_sig*1e-9)    # Sig grid Frquency array  # Delta nu array @ Sig wavelebgth for NF calulation. 
     DNU_sig      = np.full((N_sig), 0.00)
