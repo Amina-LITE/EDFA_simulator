@@ -12,12 +12,28 @@ def Get_Probe_Spectrum(Probe_name, amp):
     #From Probe name, get  'Port1_Component_Name' ,  'Port2_Component_Name'
     #From Port_component name, get index for amp 
     # From amp[index], get output forward 
-    input_sig = amp[0]
-    P_in = input_sig.getOutputForward()
-    output_sig = amp[-1]
-    P_out = output_sig.getOutputForward()
+    #p1 refers to port 1, p2 refers to port 2 
 
-    return 
+    PD_dict = dict((x[2], x[3:]) for x in ap.OpticalProbe)
+    cmps = ap.OpticalComponent
+    if Probe_name in PD_dict: 
+        c_p1 = PD_dict.get(Probe_name)[0]
+        c_p2 = PD_dict.get(Probe_name)[1]     
+        try:        
+            result_p1 = [element for element in cmps if element[1] == c_p1]
+            index_p1 = cmps.index(result_p1[0]) + 1 
+        except: 
+            index_p1 = 0     
+        result_p2 = [element for element in cmps if element[1] == c_p2]
+        index_p2 = cmps.index(result_p2[0]) + 1 
+        Port_1_sig = amp[index_p1]
+        Power_p1 = Port_1_sig.getOutputForward()
+        Port_2_sig = amp[index_p2]
+        Power_p2 = Port_2_sig.getOutputForward()
+    else: 
+        print('Probe not defined')    
+    
+    return Power_p1, Power_p2
 
 
 def listSplitter(concatList,concatList2=None):
