@@ -101,3 +101,11 @@ Pump4 =    [
 ]
 
 OpticalPump = [Pump1, Pump2, Pump3, Pump4]
+
+#['Probe Type' , 'Direction', 'Probe Name' ,  'Port1_Component_Name' ,  'Port2_Component_Name'], ASSUMES COMPONENT NAME IS UNIQUE> NEED TO CHECK. 
+OpticalProbe =    [
+['Gain'   ,   'Forward'    ,  'AmplifierGain' ,  'ConnectorIn' ,  'ConnectorOut'     ], 
+['Gain'   ,   'Forward'    ,  'Coil1Gain'     ,  'WDM1'        ,   'EDF1'            ],
+['PD'     ,   'Forward'    ,  'InputPD'       ,  'Split1/2'    ,   ''                ],
+['NF'     ,   'Forward'    ,  'AmplifierNF'   ,  'SignalIn/1'  ,   'ConnectorOut/1'  ]
+]

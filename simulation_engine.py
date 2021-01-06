@@ -10,7 +10,7 @@ import physicslib as ph
 #set the amp description to work with
 import new_amp as ap
 import Settings as settings
-
+from physicslib import probe_Tools
 from matplotlib import pyplot as plt
 
 # amp array where all the component objects are added to
@@ -216,6 +216,13 @@ print("--- %s seconds ---" % (time.time() - start_time))
 component = amp[-1]
 poutamp = component.getOutputForward()
 
+Spectrum = probe_Tools.Get_Probe_Spectrum('AmplifierGain', amp)
+
+#End goal for probes is to be able to call something like 
+# Spectrum = probe_Tools.Probe_Spectrum(Probe_name, amp)
+
+
+
 # just a simple print function for debugging purposes
 def printamp(a):
   for index in range(a.__len__()):
@@ -224,7 +231,7 @@ def printamp(a):
     else:
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
-#printamp(amp)
+
 #print(amp)
 
 Gain = 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T ))
