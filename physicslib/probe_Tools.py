@@ -5,20 +5,28 @@ from os.path import join, split, isdir
 from scipy.interpolate import interp1d
 import new_amp as ap
 
+def Get_Probe_values(Probe_name, amp): 
+
+    Probe_Type, Power_p1, Power_p2 = Get_Probe_Spectrum(Probe_name, amp)
+    if Probe_Type == 'Gain': 
+        probe_values = gainProbe(Power_p1, Power_p2)
+    if Probe_Type == 'PD': 
+        probe_values = sigPowerProbe(Power_p1) 
+    elif Probe_Type == 'NF': 
+        probe_values = noiseFigureProbe(Power_p1, Power_p2)
+    
+    return probe_values
 
 def Get_Probe_Spectrum(Probe_name, amp): 
-    print(Probe_name)
-    print(ap.OpticalProbe)
     #From Probe name, get  'Port1_Component_Name' ,  'Port2_Component_Name'
     #From Port_component name, get index for amp 
     # From amp[index], get output forward 
     #p1 refers to port 1, p2 refers to port 2 
-    Probe_name = 'Coil1Gain' 
-    PD_dict = dict((x[2], x[3:]) for x in ap.OpticalProbe)
+    PD_dict = dict((x[2], x[0:]) for x in ap.OpticalProbe)
     cmps = ap.OpticalComponent
     if Probe_name in PD_dict: 
         #Port 1 
-        c_p1 = PD_dict.get(Probe_name)[0]
+        c_p1 = PD_dict.get(Probe_name)[3]
         try:        
             result_p1 = [element for element in cmps if element[1] == c_p1]
             index_p1 = cmps.index(result_p1[0]) + 1 
@@ -30,7 +38,7 @@ def Get_Probe_Spectrum(Probe_name, amp):
 
         #Port 2 
         Power_p2 = []
-        c_p2 = PD_dict.get(Probe_name)[1]   
+        c_p2 = PD_dict.get(Probe_name)[4]   
         if c_p2 != '' : 
             result_p2 = [element for element in cmps if element[1] == c_p2]
             index_p2 = cmps.index(result_p2[0]) + 1 
@@ -42,8 +50,9 @@ def Get_Probe_Spectrum(Probe_name, amp):
             Power_p1 = split_out*split_ratio # Need to check correct ratio and opration (unit?)
     else: 
         print('Probe not defined')    
-    
-    return Power_p1, Power_p2
+    Probe_Type = PD_dict.get(Probe_name)[0]
+    return Probe_Type, Power_p1, Power_p2
+
 
 
 def listSplitter(concatList,concatList2=None):
@@ -98,6 +107,7 @@ def gainProbe (concatList,concat2,sigType=0):
             sigGainList.append(probeSigList2[i]/probeSigList1[i])
 
         return sigGainList, sigWaveList
+
     elif sigType==1:  #pump gain
         tempList=listSplitter(concatList,concat2)
         probePumpList1=tempList[1]

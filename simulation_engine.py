@@ -12,6 +12,7 @@ import new_amp as ap
 import Settings as settings
 from physicslib import probe_Tools
 from matplotlib import pyplot as plt
+import Graphs
 
 # amp array where all the component objects are added to
 amp = []
@@ -216,7 +217,7 @@ print("--- %s seconds ---" % (time.time() - start_time))
 component = amp[-1]
 poutamp = component.getOutputForward()
 
-Spectrum = probe_Tools.Get_Probe_Spectrum('AmplifierGain', amp)
+Probe = probe_Tools.Get_Probe_values('AmplifierGain', amp)
 
 #End goal for probes is to be able to call something like 
 # Spectrum = probe_Tools.Probe_Spectrum(Probe_name, amp)
@@ -232,10 +233,12 @@ def printamp(a):
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
 
+Graphs.Gain_plot(Probe)
+
+
 #print(amp)
 
 Gain = 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T ))
-print()
 plt.plot(settings.WL_sig , 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T )),'-or' )
 plt.grid()
 plt.xlabel('Wavelength [ nm ]', fontsize = 14)
