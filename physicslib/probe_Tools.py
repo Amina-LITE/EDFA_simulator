@@ -55,7 +55,7 @@ def Get_Probe_Spectrum(Probe_name, amp):
 
 
 
-def listSplitter(concatList,concatList2=None):
+def listSplitter(concatList,concatList2=[]):
     sigList=concatList[0:settings.N_sig]
     pumpList=concatList[settings.N_sig:settings.N_pump]
     aseList=concatList[settings.N_sig+settings.N_pump:]
@@ -64,7 +64,7 @@ def listSplitter(concatList,concatList2=None):
     pumpWavList=settings.WL[settings.N_sig:settings.N_pump]
     aseWaveList=settings.WL[settings.N_sig+settings.N_pump:]
 
-    if concatList2.any()!=None:
+    if concatList2!=[]:
         sigList2=concatList2[0:settings.N_sig]
         pumpList2=concatList2[settings.N_sig:settings.N_pump]
         aseList2=concatList2[settings.N_sig+settings.N_pump:]
@@ -142,8 +142,8 @@ def noiseFigureProbe(inputSignal,outputSignal) :#not tested
     hp = 6.62607004e-34 # Planck constant m2kg/s
     c  = 299792458      # Speed of light in vacuum m/s
     
-    N_sig = int(0.5*PoutSi.shape[0])
-    N_ase = int(0.5*PoutEr.shape[0])
+    N_sig = settings.N_sig
+    N_ase = settings.N_ase
 
     GainSig      =  gainProbe(inputSignal,outputSignal)[0]
 
@@ -158,8 +158,8 @@ def noiseFigureProbe(inputSignal,outputSignal) :#not tested
     DNU_ase[0] = NU_ase[0]-NU_ase[1]
     DNU_ase[1:] = -np.diff(NU_ase)
 
-    PASE_in  = PoutEr[0:N_ase,0]/DNU_ase      # W/Hz
-    PASE_out = PoutEr[0:N_ase,-1]/DNU_ase     # W/Hz
+    PASE_in  = PoutEr[0:N_ase]/DNU_ase      # W/Hz
+    PASE_out = PoutEr[0:N_ase]/DNU_ase     # W/Hz
     PASE_in_interp  = interp1d(WL_ase, PASE_in,  kind='linear')   # W/Hz
     PASE_out_interp = interp1d(WL_ase, PASE_out, kind='linear')   # W/Hz
     PASE_in_SigGrid    = PASE_in_interp(WL_sig)      # W/Hz
@@ -169,6 +169,6 @@ def noiseFigureProbe(inputSignal,outputSignal) :#not tested
     # NF = Pase_added / Gsig*h*v*dv + 1 / Gsig        
     gainhnudeltanu = hp*np.multiply(np.multiply(GainSig,DNU_sig),NU_sig) 
     PASE_added_SigGrid = PASE_out_SigGrid - PASE_in_SigGrid*GainSig
-    NF = PASE_added_SigGrid/gainhnudeltanu + 1/GainSig
+    NF = PASE_added_SigGrid/gainhnudeltanu #+ 1/GainSig # the 1/gainSIg is not working beacause you are adding an int to a list
     
     return NF,gainhnudeltanu

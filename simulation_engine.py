@@ -217,7 +217,10 @@ print("--- %s seconds ---" % (time.time() - start_time))
 component = amp[-1]
 poutamp = component.getOutputForward()
 
-Probe = probe_Tools.Get_Probe_values('AmplifierGain', amp)
+Probe = probe_Tools.Get_Probe_values('Coil1Gain', amp)
+#Probe2 = probe_Tools.Get_Probe_values('OutputPD', amp)          THIS DOES NOT WORK
+NFProbe= probe_Tools.Get_Probe_values('AmplifierNF', amp)
+
 
 #End goal for probes is to be able to call something like 
 # Spectrum = probe_Tools.Probe_Spectrum(Probe_name, amp)
@@ -233,10 +236,10 @@ def printamp(a):
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
 
-Graphs.Gain_plot(Probe)
+Graphs.general_Plot(Probe,"Coil1Gain")#Have to automate this 
+#Graphs.general_Plot(Probe2,"OutputPD")#Have to automate this 
 
 
-#print(amp)
 
 Gain = 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T ))
 plt.plot(settings.WL_sig , 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T )),'-or' )
