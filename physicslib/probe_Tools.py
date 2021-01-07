@@ -55,7 +55,7 @@ def listSplitter(concatList,concatList2=None):
     pumpWavList=settings.WL[settings.N_sig:settings.N_pump]
     aseWaveList=settings.WL[settings.N_sig+settings.N_pump:]
 
-    if concatList2!=None:
+    if concatList2.any()!=None:
         sigList2=concatList2[0:settings.N_sig]
         pumpList2=concatList2[settings.N_sig:settings.N_pump]
         aseList2=concatList2[settings.N_sig+settings.N_pump:]
@@ -101,7 +101,7 @@ def gainProbe (concatList,concat2,sigType=0):
     elif sigType==1:  #pump gain
         tempList=listSplitter(concatList,concat2)
         probePumpList1=tempList[1]
-        probePumpList2=tempList=[4]
+        probePumpList2=tempList[4]
         pumpWaveList=tempList[7]
         pumpGainList=[]
 
@@ -112,7 +112,7 @@ def gainProbe (concatList,concat2,sigType=0):
     else:  #ase gain
         tempList=listSplitter(concatList,concat2)
         probeAseList1=tempList[2]
-        probeAseList2=tempList=[5]
+        probeAseList2=tempList[5]
         aseWaveList=tempList[8]
         aseGainList=[]
 
