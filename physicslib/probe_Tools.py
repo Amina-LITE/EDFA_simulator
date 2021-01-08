@@ -54,17 +54,10 @@ def Get_Probe_Spectrum(Probe_name, amp):
     Probe_Type = PD_dict.get(Probe_name)[0]
     return Probe_Type, Power_p1, Power_p2
 
-
-
-def listSplitter(concatList,concatList2=[]):#issues occuring because list holding signals have each data point in an array
-    sigListTemp=concatList[0:settings.N_sig]#issue occurs only for these three not the wavs
-    pumpListTemp=concatList[settings.N_sig:settings.N_pump]#issues are in the NF function and the power if outuput signal is used
-    aseListTemp=concatList[settings.N_sig+settings.N_pump:]
-
+def arrayRemover(sigListTemp,pumpListTemp,aseListTemp):
     sigList=[]
     pumpList=[]
     aseList=[]
-
     for i in range ((max(settings.N_sig,settings.N_ase))):
         if i < settings.N_sig:
             sigList.append(sigListTemp[i][0])
@@ -73,14 +66,27 @@ def listSplitter(concatList,concatList2=[]):#issues occuring because list holdin
         if i <settings.N_pump-1:
             pumpList.append(pumpListTemp[i][0])
     
+    return sigList,pumpList,aseList
+
+
+def listSplitter(concatList,concatList2=[]):#issues occuring because list holding signals have each data point in an array
+    sigListTemp=concatList[0:settings.N_sig]#issue occurs only for these three not the wavs
+    pumpListTemp=concatList[settings.N_sig:settings.N_pump]#issues are in the NF function and the power if outuput signal is used
+    aseListTemp=concatList[settings.N_sig+settings.N_pump:]
+    
+    sigList,pumpList,aseList=arrayRemover(sigListTemp,pumpListTemp,aseListTemp)
+    
     sigWavList=settings.WL[0:settings.N_sig]
     pumpWavList=settings.WL[settings.N_sig:settings.N_pump]
     aseWaveList=settings.WL[settings.N_sig+settings.N_pump:]
 
     if concatList2!=[]:
-        sigList2=concatList2[0:settings.N_sig]
-        pumpList2=concatList2[settings.N_sig:settings.N_pump]
-        aseList2=concatList2[settings.N_sig+settings.N_pump:]
+        sigListTemp2=concatList2[0:settings.N_sig]
+        pumpListTemp2=concatList2[settings.N_sig:settings.N_pump]
+        aseListTemp2=concatList2[settings.N_sig+settings.N_pump:]
+
+        sigList2,pumpList2,aseList2=arrayRemover(sigListTemp2,pumpListTemp2,aseListTemp2)
+
         return sigList,pumpList,aseList,sigList2,pumpList2,aseList2,sigWavList,pumpWavList,aseWaveList
 
     return sigList,pumpList,aseList,sigWavList,pumpWavList,aseWaveList

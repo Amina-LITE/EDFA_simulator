@@ -218,7 +218,7 @@ component = amp[-1]
 poutamp = component.getOutputForward()
 
 Probe = probe_Tools.Get_Probe_values('Coil1Gain', amp)
-Probe2 = probe_Tools.Get_Probe_values('OutputPD', amp)         
+#Probe2 = probe_Tools.Get_Probe_values('OutputPD', amp)  THIS DOES NOT WORK       
 NFProbe= probe_Tools.Get_Probe_values('AmplifierNF', amp)
 
 
@@ -237,7 +237,7 @@ def printamp(a):
 
 
 Graphs.general_Plot(Probe,"Coil1Gain")#Have to automate this 
-Graphs.general_Plot(Probe2,"OutputPD")#Have to automate this 
+#Graphs.general_Plot(Probe2,"OutputPD")#Have to automate this 
 Graphs.general_Plot(NFProbe,"AmplifierNF")#Have to automate this 
 
 
