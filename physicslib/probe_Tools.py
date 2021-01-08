@@ -74,7 +74,10 @@ def listSplitter(concatList,concatList2=[],numList=1):#issues occuring because l
     pumpListTemp=concatList[settings.N_sig:settings.N_pump]#issues are in the NF function and the power if outuput signal is used
     aseListTemp=concatList[settings.N_sig+settings.N_pump:]
     
-    sigList,pumpList,aseList=arrayRemover(sigListTemp,pumpListTemp,aseListTemp)
+    if isinstance(sigListTemp[0], np.ndarray): 
+        sigList,pumpList,aseList=arrayRemover(sigListTemp,pumpListTemp,aseListTemp)
+    else:
+        sigList,pumpList,aseList=sigListTemp,pumpListTemp,aseListTemp
     
     sigWavList=settings.WL[0:settings.N_sig]
     pumpWavList=settings.WL[settings.N_sig:settings.N_pump]
@@ -85,7 +88,10 @@ def listSplitter(concatList,concatList2=[],numList=1):#issues occuring because l
         pumpListTemp2=concatList2[settings.N_sig:settings.N_pump]
         aseListTemp2=concatList2[settings.N_sig+settings.N_pump:]
 
-        sigList2,pumpList2,aseList2=arrayRemover(sigListTemp2,pumpListTemp2,aseListTemp2)
+        if isinstance(sigListTemp2[0], np.ndarray): 
+            sigList2,pumpList2,aseList2=arrayRemover(sigListTemp2,pumpListTemp2,aseListTemp2)
+        else:
+             sigList2,pumpList2,aseList2=sigListTemp2,pumpListTemp2,aseListTemp2
 
         return sigList,pumpList,aseList,sigList2,pumpList2,aseList2,sigWavList,pumpWavList,aseWaveList
 

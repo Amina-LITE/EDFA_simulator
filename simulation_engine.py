@@ -217,8 +217,8 @@ print("--- %s seconds ---" % (time.time() - start_time))
 component = amp[-1]
 poutamp = component.getOutputForward()
 
-#Probe = probe_Tools.Get_Probe_values('Coil1Gain', amp)
-#Probe2 = probe_Tools.Get_Probe_values('OutputPD', amp)  THIS DOES NOT WORK       
+Probe = probe_Tools.Get_Probe_values('Coil1Gain', amp)
+Probe2 = probe_Tools.Get_Probe_values('AmplifierGain', amp)        
 NFProbe= probe_Tools.Get_Probe_values('AmplifierNF', amp)
 
 
@@ -236,8 +236,8 @@ def printamp(a):
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
 
-#Graphs.general_Plot(Probe,"Coil1Gain")#Have to automate this 
-#Graphs.general_Plot(Probe2,"OutputPD")#Have to automate this 
+Graphs.general_Plot(Probe,"Coil1Gain")#Have to automate this 
+Graphs.general_Plot(Probe2,"AmplifierGain")#Have to automate this 
 Graphs.general_Plot(NFProbe,"AmplifierNF")#Have to automate this 
 
 

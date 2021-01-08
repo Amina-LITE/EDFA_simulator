@@ -107,5 +107,5 @@ OpticalProbe =    [
 ['Gain'   ,   'Forward'    ,  'AmplifierGain' ,  'SignalIn' ,  'ConnectorOut'     ], 
 ['Gain'   ,   'Forward'    ,  'Coil1Gain'     ,  'WDM1'        ,   'EDF1'            ],
 ['PD'     ,   'Forward'    ,  'InputPD'       ,  'Split1'    ,   ''                ],
-['NF'     ,   'Forward'    ,  'AmplifierNF'   ,  'SignalIn'  ,   'WDM1'  ]
+['NF'     ,   'Forward'    ,  'AmplifierNF'   ,  'SignalIn'  ,   'ConnectorOut'  ]
 ]
