@@ -69,7 +69,7 @@ def arrayRemover(sigListTemp,pumpListTemp,aseListTemp):
     return sigList,pumpList,aseList
 
 
-def listSplitter(concatList,concatList2=[]):#issues occuring because list holding signals have each data point in an array
+def listSplitter(concatList,concatList2=[],numList=1):#issues occuring because list holding signals have each data point in an array
     sigListTemp=concatList[0:settings.N_sig]#issue occurs only for these three not the wavs
     pumpListTemp=concatList[settings.N_sig:settings.N_pump]#issues are in the NF function and the power if outuput signal is used
     aseListTemp=concatList[settings.N_sig+settings.N_pump:]
@@ -80,7 +80,7 @@ def listSplitter(concatList,concatList2=[]):#issues occuring because list holdin
     pumpWavList=settings.WL[settings.N_sig:settings.N_pump]
     aseWaveList=settings.WL[settings.N_sig+settings.N_pump:]
 
-    if concatList2!=[]:
+    if numList==2:
         sigListTemp2=concatList2[0:settings.N_sig]
         pumpListTemp2=concatList2[settings.N_sig:settings.N_pump]
         aseListTemp2=concatList2[settings.N_sig+settings.N_pump:]
@@ -116,7 +116,7 @@ def sigPowerProbe(concatList,sigType=0):
 
 def gainProbe (concatList,concat2,sigType=0):
     if sigType==0:  #signal gain
-        tempList=listSplitter(concatList,concat2)
+        tempList=listSplitter(concatList,concat2,2)
         probeSigList1=tempList[0]
         probeSigList2=tempList[3]
         sigWaveList=tempList[6]
@@ -128,7 +128,7 @@ def gainProbe (concatList,concat2,sigType=0):
         return sigGainList, sigWaveList
 
     elif sigType==1:  #pump gain
-        tempList=listSplitter(concatList,concat2)
+        tempList=listSplitter(concatList,concat2,2)
         probePumpList1=tempList[1]
         probePumpList2=tempList[4]
         pumpWaveList=tempList[7]
@@ -139,7 +139,7 @@ def gainProbe (concatList,concat2,sigType=0):
 
         return pumpGainList, pumpWaveList
     else:  #ase gain
-        tempList=listSplitter(concatList,concat2)
+        tempList=listSplitter(concatList,concat2,2)
         probeAseList1=tempList[2]
         probeAseList2=tempList[5]
         aseWaveList=tempList[8]
@@ -152,7 +152,7 @@ def gainProbe (concatList,concat2,sigType=0):
 
 
 def noiseFigureProbe(inputSignal,outputSignal) :#not tested 
-    tempList=listSplitter(inputSignal,outputSignal)
+    tempList=listSplitter(inputSignal,outputSignal,2)
     WL_sig=tempList[6]
     WL_ase=tempList[8]
     inASE=tempList[2]
