@@ -22,6 +22,7 @@ def Get_Probe_Spectrum(Probe_name, amp):
     #From Port_component name, get index for amp 
     # From amp[index], get output forward 
     #p1 refers to port 1, p2 refers to port 2 
+    
     PD_dict = dict((x[2], x[0:]) for x in ap.OpticalProbe)
     cmps = ap.OpticalComponent
     if Probe_name in PD_dict: 
@@ -55,11 +56,23 @@ def Get_Probe_Spectrum(Probe_name, amp):
 
 
 
-def listSplitter(concatList,concatList2=[]):
-    sigList=concatList[0:settings.N_sig]
-    pumpList=concatList[settings.N_sig:settings.N_pump]
-    aseList=concatList[settings.N_sig+settings.N_pump:]
+def listSplitter(concatList,concatList2=[]):#issues occuring because list holding signals have each data point in an array
+    sigListTemp=concatList[0:settings.N_sig]#issue occurs only for these three not the wavs
+    pumpListTemp=concatList[settings.N_sig:settings.N_pump]#issues are in the NF function and the power if outuput signal is used
+    aseListTemp=concatList[settings.N_sig+settings.N_pump:]
 
+    sigList=[]
+    pumpList=[]
+    aseList=[]
+
+    for i in range ((max(settings.N_sig,settings.N_ase))):
+        if i < settings.N_sig:
+            sigList.append(sigListTemp[i][0])
+        if i < settings.N_ase:
+            aseList.append(aseListTemp[i][0])
+        if i <settings.N_pump-1:
+            pumpList.append(pumpListTemp[i][0])
+    
     sigWavList=settings.WL[0:settings.N_sig]
     pumpWavList=settings.WL[settings.N_sig:settings.N_pump]
     aseWaveList=settings.WL[settings.N_sig+settings.N_pump:]
@@ -136,8 +149,9 @@ def noiseFigureProbe(inputSignal,outputSignal) :#not tested
     tempList=listSplitter(inputSignal,outputSignal)
     WL_sig=tempList[6]
     WL_ase=tempList[8]
-    PoutSi=tempList[3]
-    PoutEr=tempList[5] 
+    inASE=tempList[2]
+    outASE=tempList[5] 
+    
 
     hp = 6.62607004e-34 # Planck constant m2kg/s
     c  = 299792458      # Speed of light in vacuum m/s
@@ -158,8 +172,8 @@ def noiseFigureProbe(inputSignal,outputSignal) :#not tested
     DNU_ase[0] = NU_ase[0]-NU_ase[1]
     DNU_ase[1:] = -np.diff(NU_ase)
 
-    PASE_in  = PoutEr[0:N_ase]/DNU_ase      # W/Hz
-    PASE_out = PoutEr[0:N_ase]/DNU_ase     # W/Hz
+    PASE_in  = inASE/DNU_ase      # W/Hz  
+    PASE_out = outASE/DNU_ase     # W/Hz 
     PASE_in_interp  = interp1d(WL_ase, PASE_in,  kind='linear')   # W/Hz
     PASE_out_interp = interp1d(WL_ase, PASE_out, kind='linear')   # W/Hz
     PASE_in_SigGrid    = PASE_in_interp(WL_sig)      # W/Hz
@@ -169,6 +183,7 @@ def noiseFigureProbe(inputSignal,outputSignal) :#not tested
     # NF = Pase_added / Gsig*h*v*dv + 1 / Gsig        
     gainhnudeltanu = hp*np.multiply(np.multiply(GainSig,DNU_sig),NU_sig) 
     PASE_added_SigGrid = PASE_out_SigGrid - PASE_in_SigGrid*GainSig
-    NF = PASE_added_SigGrid/gainhnudeltanu #+ 1/GainSig # the 1/gainSIg is not working beacause you are adding an int to a list
-    
-    return NF,gainhnudeltanu
+    NF = PASE_added_SigGrid/gainhnudeltanu + np.reciprocal(GainSig) 
+    #nf should be a list 
+    return NF,WL_sig,gainhnudeltanu
+
