@@ -217,10 +217,10 @@ print("--- %s seconds ---" % (time.time() - start_time))
 component = amp[-1]
 poutamp = component.getOutputForward()
 
-def probeDisplay():
+def probeDisplay():#Goes through all the probes and displays them
   for i in ap.OpticalProbe:
     Probe= probe_Tools.Get_Probe_values(i[2], amp)
-    Graphs.general_Plot(Probe,i[2])
+    Graphs.general_Plot(Probe,i[2],i[0])
 
 
 
@@ -255,6 +255,6 @@ plt.plot(settings.WL_sig , 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(set
 plt.grid()
 plt.xlabel('Wavelength [ nm ]', fontsize = 14)
 plt.ylabel('Gain [ dB ]', fontsize = 14)
-plt.title("Amplifier total gain")
+plt.title("Total Amplifier Gain")
 #plt.xlim(WL_sig_start-5,WL_sig_stop+5)
 plt.show()
