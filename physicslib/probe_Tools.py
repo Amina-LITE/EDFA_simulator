@@ -10,8 +10,10 @@ def Get_Probe_values(Probe_name, amp):
     Probe_Type, Power_p1, Power_p2 = Get_Probe_Spectrum(Probe_name, amp)
     if Probe_Type == 'Gain': 
         probe_values = gainProbe(Power_p1, Power_p2)
-    if Probe_Type == 'PD': 
+    if Probe_Type == 'PDSig': 
         probe_values = sigPowerProbe(Power_p1) 
+    if Probe_Type == 'PDASE': 
+        probe_values = sigPowerProbe(Power_p1,2) 
     elif Probe_Type == 'NF': 
         probe_values = noiseFigureProbe(Power_p1, Power_p2)
     
