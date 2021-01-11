@@ -217,13 +217,20 @@ print("--- %s seconds ---" % (time.time() - start_time))
 component = amp[-1]
 poutamp = component.getOutputForward()
 
-Probe = probe_Tools.Get_Probe_values('Coil1Gain', amp)
-Probe2 = probe_Tools.Get_Probe_values('AmplifierGain', amp)        
-NFProbe= probe_Tools.Get_Probe_values('AmplifierNF', amp)
+def probeDisplay():
+  for i in ap.OpticalProbe:
+    Probe= probe_Tools.Get_Probe_values(i[2], amp)
+    Graphs.general_Plot(Probe,i[2])
 
 
-#End goal for probes is to be able to call something like 
-# Spectrum = probe_Tools.Probe_Spectrum(Probe_name, amp)
+
+
+
+#Probe = probe_Tools.Get_Probe_values('InputPD', amp)
+#Probe2 = probe_Tools.Get_Probe_values('InputPD2', amp)        
+#NFProbe= probe_Tools.Get_Probe_values('AmplifierNF', amp)
+
+
 
 
 
@@ -236,10 +243,11 @@ def printamp(a):
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
 
-Graphs.general_Plot(Probe,"Coil1Gain")#Have to automate this 
-Graphs.general_Plot(Probe2,"AmplifierGain")#Have to automate this 
-Graphs.general_Plot(NFProbe,"AmplifierNF")#Have to automate this 
+#Graphs.general_Plot(Probe,"Signal powre")#Have to automate this 
+#Graphs.general_Plot(Probe2,"Singal ase")#Have to automate this 
+#Graphs.general_Plot(NFProbe,"AmplifierNF")#Have to automate this 
 
+probeDisplay()
 
 
 Gain = 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T ))
@@ -247,5 +255,6 @@ plt.plot(settings.WL_sig , 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(set
 plt.grid()
 plt.xlabel('Wavelength [ nm ]', fontsize = 14)
 plt.ylabel('Gain [ dB ]', fontsize = 14)
+plt.title("Amplifier total gain")
 #plt.xlim(WL_sig_start-5,WL_sig_stop+5)
 plt.show()
