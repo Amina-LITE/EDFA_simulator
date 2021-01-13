@@ -56,26 +56,34 @@ def lossReport():
     workbook=writer.book
     worksheet=workbook.add_worksheet('Result')
     writer.sheets['Result'] = worksheet
-
-    cell_format = workbook.add_format()
-    cell_format.set_align('center')
-    worksheet.write_string(0, 0, "Loss Report ", cell_format)
-    worksheet.write_string(0, 1, str(date.today()), cell_format)
     
-
-    sheetRow=3#keeps track of current row
-    title_format = workbook.add_format() #format for title cells 
+    sheetRow=1#keeps track of current row
+    #format for cells 
+    title_format = workbook.add_format({ 
+        'fg_color': '#5DADE2',
+        'font_color': '#000000',
+        'align': 'center',
+        'border': 1})
+    total_format = workbook.add_format({ 
+        'fg_color': '#F2D218',
+        'font_color': '#000000',
+        'align': 'center',
+        'bold': 1})
     title_format.set_font_size(20)
-    worksheet.write_string(sheetRow, 0, listOfDF[0].name,title_format)
-    sheetRow+=1
+    total_format.set_font_size(12)
+    worksheet.write_string(0, 0, "Loss Report ", total_format)
+    worksheet.write_string(0, 1, str(date.today()), total_format)
+    sheetRow+=2
+
+    worksheet.merge_range('A'+str(sheetRow)+':E'+str(sheetRow), listOfDF[0].name, title_format)
     for i in range(len(listOfDF)):#going through dataframe and adding the dataframes to excel
         listOfDF[i].to_excel(writer,sheet_name='Result',startrow=sheetRow , startcol=0)
         if i<len(listOfDF)-1:
-            worksheet.write_string(listOfDF[i].shape[0] + sheetRow+3, 0, listOfDF[i+1].name,title_format)
+            worksheet.merge_range('A'+str(listOfDF[i].shape[0] + sheetRow+4)+':E'+str(listOfDF[i].shape[0] + sheetRow+4), listOfDF[i+1].name, title_format)
         sheetRow+=listOfDF[i].shape[0]
-        worksheet.write_string(sheetRow+1, 0, "Total Insertion Loss", cell_format)
-        worksheet.write_string(sheetRow+1, 1, str(listofTotalIL[i]), cell_format)
-        sheetRow+=4
+        worksheet.merge_range('A'+str(sheetRow+2)+':D'+str(sheetRow+2), "Total Insertion Loss", total_format)
+        worksheet.write_string(sheetRow+1, 4, str(listofTotalIL[i]), total_format)
+        sheetRow+=3
     #formatting cells
     worksheet.set_column('A:A', 20)
     worksheet.set_column('B:B', 20)
@@ -94,4 +102,4 @@ def getInsertionLoss (cFamily,cType):
 
 
 
-lossReport()
+
