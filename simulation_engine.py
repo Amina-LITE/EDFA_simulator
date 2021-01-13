@@ -13,7 +13,7 @@ import Settings as settings
 from physicslib import probe_Tools
 from matplotlib import pyplot as plt
 import Graphs
-
+import reporting_tools
 # amp array where all the component objects are added to
 amp = []
 
@@ -224,16 +224,6 @@ def probeDisplay():#Goes through all the probes and displays them
 
 
 
-
-
-#Probe = probe_Tools.Get_Probe_values('InputPD', amp)
-#Probe2 = probe_Tools.Get_Probe_values('InputPD2', amp)        
-#NFProbe= probe_Tools.Get_Probe_values('AmplifierNF', amp)
-
-
-
-
-
 # just a simple print function for debugging purposes
 def printamp(a):
   for index in range(a.__len__()):
@@ -243,11 +233,8 @@ def printamp(a):
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
 
-#Graphs.general_Plot(Probe,"Signal powre")#Have to automate this 
-#Graphs.general_Plot(Probe2,"Singal ase")#Have to automate this 
-#Graphs.general_Plot(NFProbe,"AmplifierNF")#Have to automate this 
-
-probeDisplay()
+probeDisplay()#calls the function that displays all the probes 
+reporting_tools.lossReport()#generates the report for the inserstion loss of the components 
 
 
 Gain = 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T ))

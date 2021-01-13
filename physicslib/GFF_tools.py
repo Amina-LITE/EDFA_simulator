@@ -19,7 +19,7 @@ def closest_index(WL_list, K):
     Closest = WL_list[min(range(len(WL_list)), key = lambda i: abs(WL_list[i]-K))] 
     return list(WL_list).index(Closest)
 
-def Put_zeros(Loss_list, index, direction):
+def Put_zeros(Loss_list, index, direction):#adds zeros to the wavelength that dont have a defined value in the GFF
     if direction == "start": 
         i = 0 
         while i < index+1: 
@@ -32,7 +32,7 @@ def Put_zeros(Loss_list, index, direction):
             i -= 1      
     return Loss_list
 
-def Load_GFF_data(WL_sig, WL_pump, WL_ase,gff_type):
+def Load_GFF_data(WL_sig, WL_pump, WL_ase,gff_type):#lods the gff data from the excel file 
     #file = r"gff\GFF2.xlsx"   # Will be remplaced by Get_Excel_file: data = Get_Excel_file(GFF2)
     data =  Get_Excel_file(gff_type)# pd.read_excel(file,sheet_name='Insertion_Loss')
     Wavelength  = np.squeeze( data[['Wavelength']] )
