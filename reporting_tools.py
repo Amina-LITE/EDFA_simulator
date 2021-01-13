@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import Settings as settings
 import new_amp as ap
+import database as db
+from datetime import date
 
 def lossReport():
     #Reading the amp discription and adding each of the different sections to a data frame
@@ -16,10 +18,10 @@ def lossReport():
         if beforeAmpCheck==True :
             tempList=[]
             while ap.OpticalComponent[i][0]!="iso":
-                tempDic={'Component': ap.OpticalComponent[i][0], 'Name': ap.OpticalComponent[i][1], 'Type': ap.OpticalComponent[i][2], 'Mean IL': 50 }
-                #the il is wrong atm
+                loss=getInsertionLoss(ap.OpticalComponent[i][0],ap.OpticalComponent[i][2])
+                tempDic={'Component': ap.OpticalComponent[i][0], 'Name': ap.OpticalComponent[i][1], 'Type': ap.OpticalComponent[i][2], 'Mean IL': loss }
                 i+=1
-                tempTotalIL+=50#FIX THIS ITS NOT 50 ITS WHAT EVER I DO IN THE ABOVE LINE
+                tempTotalIL+=loss
                 tempList.append(tempDic)
 
             df = pd.DataFrame(tempList,columns=tempDic.keys())
@@ -30,10 +32,10 @@ def lossReport():
         else: 
             tempList=[]
             while ap.OpticalComponent[i-1][0]!="edf" and i< len(ap.OpticalComponent) :
-                tempDic={'Component': ap.OpticalComponent[i][0], 'Name': ap.OpticalComponent[i][1], 'Type': ap.OpticalComponent[i][2], 'Mean IL': 50 }
-                #the il is wrong atm
+                loss=getInsertionLoss(ap.OpticalComponent[i][0],ap.OpticalComponent[i][2])
+                tempDic={'Component': ap.OpticalComponent[i][0], 'Name': ap.OpticalComponent[i][1], 'Type': ap.OpticalComponent[i][2], 'Mean IL': loss }
                 i+=1
-                tempTotalIL+=50#FIX THIS ITS NOT 50 ITS WHAT EVER I DO IN THE ABOVE LINE
+                tempTotalIL+=loss
                 tempList.append(tempDic)
                 
 
@@ -54,28 +56,43 @@ def lossReport():
     workbook=writer.book
     worksheet=workbook.add_worksheet('Result')
     writer.sheets['Result'] = worksheet
-    worksheet.write_string(0, 0, "Loss Report ")
-    worksheet.write_string(0, 1, "Fix this to show date ")# need to add date
+
+    cell_format = workbook.add_format()
+    cell_format.set_align('center')
+    worksheet.write_string(0, 0, "Loss Report ", cell_format)
+    worksheet.write_string(0, 1, str(date.today()), cell_format)
+    
 
     sheetRow=3
-    worksheet.write_string(sheetRow, 0, listOfDF[0].name)
+    title_format = workbook.add_format()
+    title_format.set_font_size(20)
+    worksheet.write_string(sheetRow, 0, listOfDF[0].name,title_format)
     sheetRow+=1
     for i in range(len(listOfDF)):
         listOfDF[i].to_excel(writer,sheet_name='Result',startrow=sheetRow , startcol=0)
         if i<len(listOfDF)-1:
-            worksheet.write_string(listOfDF[i].shape[0] + sheetRow+3, 0, listOfDF[i+1].name)
+            worksheet.write_string(listOfDF[i].shape[0] + sheetRow+3, 0, listOfDF[i+1].name,title_format)
         sheetRow+=listOfDF[i].shape[0]
-        worksheet.write_string(sheetRow+1, 0, "Total Insertion Loss")
-        worksheet.write_string(sheetRow+1, 1, str(listofTotalIL[i]))
+        worksheet.write_string(sheetRow+1, 0, "Total Insertion Loss", cell_format)
+        worksheet.write_string(sheetRow+1, 1, str(listofTotalIL[i]), cell_format)
         sheetRow+=4
+    
+    worksheet.set_column('A:A', 20)
+    worksheet.set_column('B:B', 20)
+    worksheet.set_column('C:C', 20)
+    worksheet.set_column('D:D', 20)
+    worksheet.set_column('E:E', 20)
     writer.save()
 
 
+def getInsertionLoss (cFamily,cType):
+    # getting loss values for each component
+    query_str = 'ComponentFamily == "' + cFamily + '" and ComponentType == "' + cType + '"'
+    data = db.excel_db().run_excel_query(query_str)
+    cLoss     = data["Loss"].item()
+    return cLoss
 
-    #https://datascience.stackexchange.com/questions/46437/how-to-write-multiple-data-frames-in-an-excel-sheet
-    #Use this link to figure out adding to excel spreadsheet
 
-    
+
 
 lossReport()
-
