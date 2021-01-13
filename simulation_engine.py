@@ -217,10 +217,15 @@ print("--- %s seconds ---" % (time.time() - start_time))
 component = amp[-1]
 poutamp = component.getOutputForward()
 
-def probeDisplay():#Goes through all the probes and displays them
+def probeHandeler():#Goes through all the probes displays them and creates the report for them
+  listOfProbes=[]
   for i in ap.OpticalProbe:
     Probe= probe_Tools.Get_Probe_values(i[2], amp)
-    Graphs.general_Plot(Probe,i[2],i[0])
+    listOfProbes.append(Probe)
+    #Graphs.general_Plot(Probe,i[2],i[0]) PUT THIS BACK IN AFTER FINISHED TESTING
+  
+  reporting_tools.probeReport(listOfProbes)#generates the report for the probe data
+
 
 
 
@@ -233,7 +238,7 @@ def printamp(a):
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
 
-probeDisplay()#calls the function that displays all the probes 
+probeHandeler()#calls the function that displays all the probes 
 reporting_tools.lossReport()#generates the report for the inserstion loss of the components 
 
 

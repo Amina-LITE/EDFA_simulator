@@ -27,6 +27,7 @@ def lossReport():
             df = pd.DataFrame(tempList,columns=tempDic.keys())
             df.name = "Before Amplifer"          
             listOfDF.append(df)
+            tempTotalIL="{:10.4f}".format(tempTotalIL)
             listofTotalIL.append(tempTotalIL)
             beforeAmpCheck=False
         else: #creates data frames for all components after first dataframe for before amp
@@ -102,4 +103,44 @@ def getInsertionLoss (cFamily,cType):
 
 
 
+
+def probeReport(probeList): 
+    writer = pd.ExcelWriter('C:\\Users\\cha78317\\Box\\EDFA simulator\\edfasim Oct 2020\\Reports\\LossReports\\ProbeReport.xlsx',engine='xlsxwriter')
+    workbook=writer.book
+    title_format = workbook.add_format({ 
+        'fg_color': '#5DADE2',
+        'font_color': '#000000',
+        'align': 'center',
+        'border': 1})
+    title2_format = workbook.add_format({ 
+        'fg_color': '#F2D218',
+        'font_color': '#000000',
+        'align': 'center',
+        'bold': 1})
+    title_format.set_font_size(12)
+    for i,probe in enumerate(probeList):
+        dataList=probe[0]
+        waveList=probe[1]
+        probeName=ap.OpticalProbe[i][2]
+        probeType=ap.OpticalProbe[i][0]
+        worksheet=workbook.add_worksheet(probeName)
+        writer.sheets[probeName] = worksheet
+        worksheet.write_string(0, 0, probeName+" Report ", title_format)
+        worksheet.write_string(0, 1, str(date.today()), title_format)
+        
+        worksheet.write_string(2, 0, "Wavelength", title2_format)
+        worksheet.write_string(2, 1, probeType+ "(dB)", title2_format)
+        for i in range(len(dataList)):
+            worksheet.write(i+3, 0, waveList[i])
+            if dataList[i]==0:
+                dbValue=0    
+            else:
+                dbValue= 10*np.log10(dataList[i])
+            worksheet.write(i+3, 1,dbValue )
+
+        worksheet.set_column('A:A', 20)
+        worksheet.set_column('B:B', 20)
+        worksheet.set_column('C:C', 20)
+
+    writer.save()
 
