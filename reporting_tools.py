@@ -4,6 +4,7 @@ import Settings as settings
 import new_amp as ap
 import database as db
 from datetime import date
+from scipy.stats import linregress
 
 def lossReport():
     #Reading the amp discription and adding each of the different sections to a data frame
@@ -130,17 +131,45 @@ def probeReport(probeList):
         
         worksheet.write_string(2, 0, "Wavelength", title2_format)
         worksheet.write_string(2, 1, probeType+ "(dB)", title2_format)
+        
+        dbData=[] #used for calculation of ripple
+
         for i in range(len(dataList)):
-            worksheet.write(i+3, 0, waveList[i])
+            worksheet.write(i+3, 0, waveList[i])#wavelength
             if dataList[i]==0:
                 dbValue=0    
             else:
-                dbValue= 10*np.log10(dataList[i])
-            worksheet.write(i+3, 1,dbValue )
-
+                dbValue= 10*np.log10(dataList[i])#value be it gain nf etc
+            worksheet.write(i+3, 1,dbValue)
+            dbData.append(dbValue)
+        
+        if probeType!="PDASE" and probeType!="PDSig":
+            worksheet.write_string(2, 2, "Ripple (dB)", title2_format)
+            slope, intercept, r_value, p_value, stderr = linregress(waveList, dbData)
+            for i in range(len(waveList)):
+                linRegressValue=slope*waveList[i] + intercept
+                ripple=dbData[i] - linRegressValue
+                worksheet.write(i+3, 2,ripple)
         worksheet.set_column('A:A', 20)
         worksheet.set_column('B:B', 20)
         worksheet.set_column('C:C', 20)
+        chart = workbook.add_chart({'type': 'scatter'})
+        chart.add_series({
+            'categories': '='+probeName+'!$A$4:$A$'+str(len(dataList)+4),
+            'values':     '='+probeName+'!$B$4:$B$'+str(len(dataList)+4),
+            'trendline': {
+                'type': 'linear',
+                'name': 'Linear Trend',
+                'line': {
+                    'color': 'red',
+                    'width': 1,
+                    'dash_type': 'long_dash',
+                },
+            },
+        })
+        worksheet.insert_chart('F1', chart)
 
     writer.save()
+
+
 
