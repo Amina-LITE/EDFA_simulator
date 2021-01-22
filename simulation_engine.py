@@ -14,11 +14,19 @@ from physicslib import probe_Tools
 from matplotlib import pyplot as plt
 import Graphs
 import reporting_tools
+
 # amp array where all the component objects are added to
 amp = []
 
 # switch_status turn switches in the amp on and off. True = on and False = off
 switch_status = {'SWITCH1' : "off"}
+
+createILReport=False
+createProbeReport=False
+graphProbs=False
+
+#pump list
+OpticalPumpParsed = {}
 
 # Creating Source Layer
 # sarray is the source layers from the amp description, a is the amp
@@ -34,15 +42,15 @@ def createsourcelayer(sarray,a):
     mysource = edfacomponent.source(sarray[index][2],settings.WL, settings.Power,sarray[index][1],sarray[index][2],sarray[index][0],'source')
     ph.source_physics(mysource)
     a.append(mysource)
+  
 
-createsourcelayer(ap.OpticalSource, amp)
+
 
 # Create Pump Layer
 # parray is the pump layer from the amp description
 # DOES NOT CREATE ANY COMPONENTS
 # Only calculates the total loss of all the components for respective wdms
 # Will only go through each pumps
-OpticalPumpParsed = {}
 
 def createpumplayer(parray):
   plen = parray.__len__()
@@ -84,9 +92,9 @@ def calcualte_pump(parray):
   for index in range(p_len):
     OpticalPumpParsed.update(createpumplayer(parray[index]))
   
-  print(OpticalPumpParsed)
+  #print(OpticalPumpParsed)PUTTTTTTTTTTTTTTT THISSSSSSSSSSSSSSSSS BCKKKKKKKKK
   
-calcualte_pump(ap.OpticalPump)
+
 
 # Main parsing layer that goes through the component layer to 
 # create components, 
@@ -94,7 +102,7 @@ calcualte_pump(ap.OpticalPump)
 # add components to the amp array,
 # connects corresponding inputs to outputs
 # must make sure source is the first component
-def createcomponentlayer(carray, a):
+def createcomponentlayer(carray, a,GFF_Loss=[]):
   if a.__len__() == 0:
     print("Array length cannot be 0. check to see if source is added")
     return 0
@@ -116,10 +124,12 @@ def createcomponentlayer(carray, a):
     # getting loss values for each component
     query_str = 'ComponentFamily == "' + cFamily + '" and ComponentType == "' + cType + '"'
     data      = df.run_excel_query(query_str)
-    print(query_str + ' ComponentName == "' + cName + '"')
+    #print(query_str + ' ComponentName == "' + cName + '"')PUTTTTTTTTTTTTTTT THISSSSSSSSSSSSSSSSS BCKKKKKKKKK
     cLoss     = data["Loss"].item()
+
     
-    print("Component loss is " + str(cLoss))
+    
+    #print("Component loss is " + str(cLoss)) PUTTTTTTTTTTTTTTT THISSSSSSSSSSSSSSSSS BCKKKKKKKKK
 
     # Main parsing code
     if cFamily == 'connector':
@@ -144,7 +154,7 @@ def createcomponentlayer(carray, a):
     elif cFamily == 'gff':
       component = edfacomponent.gff(1,cLoss,cName, cType, cLayer, cFamily)  
       component.setInputForward(OutPutPreviouComponent)
-      physicslib.gff_physics(component)
+      physicslib.gff_physics(component,GFF_Loss)
     elif cFamily == 'iso':
       component = edfacomponent.iso(cLoss,1,cName, cType, cLayer, cFamily)
       component.setInputForward(OutPutPreviouComponent)
@@ -207,28 +217,22 @@ def createcomponentlayer(carray, a):
       physicslib.wdm_physics(component) 
 
     a.append(component)
-    print(component.getComponentName())
-    print(10*np.log10(component.getOutputForward()[0]/1e-3))
-
-start_time = time.time()
-createcomponentlayer(ap.OpticalComponent, amp)
-
-print("--- %s seconds ---" % (time.time() - start_time))
-component = amp[-1]
-poutamp = component.getOutputForward()
+    #print(component.getComponentName())# PUT THESSSSSSSSSSSSSSSSSSSSSSSSSSSSSSEEEEE BACKKKKKKKKK
+    #print(10*np.log10(component.getOutputForward()[0]/1e-3))
+ 
 
 def probeHandeler():#Goes through all the probes displays them and creates the report for them
   listOfProbes=[]
   for i in ap.OpticalProbe:
     Probe= probe_Tools.Get_Probe_values(i[2], amp)
     listOfProbes.append(Probe)
-    #Graphs.general_Plot(Probe,i[2],i[0]) PUT THIS BACK IN AFTER FINISHED TESTING
+    if graphProbs == True:
+      Graphs.general_Plot(Probe,i[2],i[0]) 
+  if createProbeReport == True:
+    reporting_tools.probeReport(listOfProbes)#generates the report for the probe data
+
+
   
-  reporting_tools.probeReport(listOfProbes)#generates the report for the probe data
-
-
-
-
 # just a simple print function for debugging purposes
 def printamp(a):
   for index in range(a.__len__()):
@@ -238,15 +242,33 @@ def printamp(a):
       print('Component Family: '+a[index].getComponentFamily() +'\n'+'Component Name: '+ a[index].getComponentName() +'\n'+'Component Type: '+ a[index].getComponentType()+'\n'+'\n')
 
 
-probeHandeler()#calls the function that displays all the probes 
-reporting_tools.lossReport()#generates the report for the inserstion loss of the components 
+def main():
+  #main method
+  createsourcelayer(ap.OpticalSource, amp)
+  calcualte_pump(ap.OpticalPump)
+
+  start_time = time.time()
+  createcomponentlayer(ap.OpticalComponent, amp)
 
 
-Gain = 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T ))
-plt.plot(settings.WL_sig , 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T )),'-or' )
-plt.grid()
-plt.xlabel('Wavelength [ nm ]', fontsize = 14)
-plt.ylabel('Gain [ dB ]', fontsize = 14)
-plt.title("Total Amplifier Gain")
-#plt.xlim(WL_sig_start-5,WL_sig_stop+5)
-plt.show()
+
+  print("--- %s seconds ---" % (time.time() - start_time))
+  component = amp[-1]
+  poutamp = component.getOutputForward()
+
+  probeHandeler()#calls the function that displays all the probes 
+  if createILReport == True:
+    reporting_tools.lossReport()#generates the report for the inserstion loss of the components 
+
+  
+  Gain = 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T ))
+  plt.plot(settings.WL_sig , 10*np.log10( poutamp[0:settings.N_sig]/np.squeeze(settings.Signalf.T )),'-or' )
+  plt.grid()
+  plt.xlabel('Wavelength [ nm ]', fontsize = 14)
+  plt.ylabel('Gain [ dB ]', fontsize = 14)
+  plt.title("Total Amplifier Gain")
+  #plt.xlim(WL_sig_start-5,WL_sig_stop+5)
+  plt.show()
+
+if __name__ == "__main__":#allows for calls of the sim outside this class 
+    main()

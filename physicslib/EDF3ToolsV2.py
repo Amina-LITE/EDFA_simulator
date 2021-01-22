@@ -132,7 +132,7 @@ def Calculate_SteadyState(N , PinSi, PinPu, PinEr, Param, CS, NS, L):
     Beta1    = 0.9  # 
     Beta2    = 0.999  # 
     counter = 0 
-    MAXCOUNTER = 1e3
+    MAXCOUNTER = 1e4
     MN = np.full((1,NS),0)       # First  moment initial value
     VN = np.full((1,NS),0)       # Second moment initial value
     MNhat = np.full((1,NS),0)       # First  moment initial value
@@ -143,7 +143,7 @@ def Calculate_SteadyState(N , PinSi, PinPu, PinEr, Param, CS, NS, L):
     NrmdN = np.linalg.norm(dNdt)    # 2-norm or Euclidean norm  equivalent to MATLAB norm(X)
 
 
-    while (NrmdN>0.1):
+    while (NrmdN>0.01):
         counter=counter+1
         #print(NrmdN)        
         MN    = Beta1*MN + (1-Beta1)*dNdt    # First Momentum Term Update

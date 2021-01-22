@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
+import Settings as settings
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 from glob import glob
 from os.path import join, split, isdir
-from Settings import * 
+
 
 
 
@@ -37,7 +38,7 @@ def Load_GFF_data(WL_sig, WL_pump, WL_ase,gff_type):#lods the gff data from the 
     data =  Get_Excel_file(gff_type)# pd.read_excel(file,sheet_name='Insertion_Loss')
     Wavelength  = np.squeeze( data[['Wavelength']] )
     Loss = np.squeeze(data[['IL']] )
-    Loss_interpolation = interp1d(Wavelength, Loss, kind='cubic', fill_value="extrapolate")
+    Loss_interpolation = interp1d(Wavelength, Loss, kind='linear', fill_value="extrapolate")
     Loss_sig_raw =  Loss_interpolation(WL_sig)
     Loss_pump =  Loss_interpolation(WL_pump)
     Loss_ase_raw =  Loss_interpolation(WL_ase)
@@ -54,8 +55,17 @@ def Load_GFF_data(WL_sig, WL_pump, WL_ase,gff_type):#lods the gff data from the 
     Loss_pump[0] = 0 
     
     Total_loss = np.concatenate((Loss_sig,Loss_pump,Loss_ase))
-
     return Total_loss
+'''
+    ####### REMMMMMMMMMMMMMMMMMMMMMMMMMMMOVVVVVVVVVVVVVVVVVVE THHHHHHHHHHHHHHIIIIIIS LATER
+    wavelist= np.concatenate((WL_sig,WL_pump,WL_ase))
+    plt.plot(wavelist[:settings.N_sig] , Loss_sig,color="green")#green should be same as red at end
+    plt.plot(wavelist[settings.N_ase:] , Loss_ase,color="blue")
+    plt.plot(data[['Wavelength']] , data[['IL']],color="red")
+    plt.grid()
+    plt.show()
+    '''
+    
 
 #a = Load_GFF_data(WL_sig, WL_pump, WL_ase,'GFF2') 
 

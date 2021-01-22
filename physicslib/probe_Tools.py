@@ -159,7 +159,7 @@ def gainProbe (concatList,concat2,sigType=0):
         return aseGainList, aseWaveList
 
 
-def noiseFigureProbe(inputSignal,outputSignal) :#not tested 
+def noiseFigureProbe(inputSignal,outputSignal) :#Issue with current dataset where there is an outlier point 
     tempList=listSplitter(inputSignal,outputSignal,2)
     WL_sig=tempList[6]
     WL_ase=tempList[8]

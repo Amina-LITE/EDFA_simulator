@@ -106,7 +106,7 @@ def getInsertionLoss (cFamily,cType):
 
 
 def probeReport(probeList): 
-    writer = pd.ExcelWriter('C:\\Users\\cha78317\\Box\\EDFA simulator\\edfasim Oct 2020\\Reports\\LossReports\\ProbeReport.xlsx',engine='xlsxwriter')
+    writer = pd.ExcelWriter('C:\\Users\\cha78317\\Box\\EDFA simulator\\edfasim Oct 2020\\Reports\\ProbeReports\\ProbeReport.xlsx',engine='xlsxwriter')
     workbook=writer.book
     title_format = workbook.add_format({ 
         'fg_color': '#5DADE2',
@@ -143,16 +143,31 @@ def probeReport(probeList):
             worksheet.write(i+3, 1,dbValue)
             dbData.append(dbValue)
         
-        if probeType!="PDASE" and probeType!="PDSig":
+        if probeType!="PDASE" and probeType!="PDSig":#within this if ripple and tilt is calculated 
             worksheet.write_string(2, 2, "Ripple (dB)", title2_format)
             slope, intercept, r_value, p_value, stderr = linregress(waveList, dbData)
+            tilt=calcTilt(waveList[0],waveList[-1],slope,intercept)
             for i in range(len(waveList)):
                 linRegressValue=slope*waveList[i] + intercept
                 ripple=dbData[i] - linRegressValue
                 worksheet.write(i+3, 2,ripple)
+            worksheet.write_string(2, 3, "Tilt", title2_format)
+            worksheet.write_string(3, 3, str(tilt))
+        else:#displays the total power
+            worksheet.write_string(2, 2, "Total Power", title2_format)
+            if dataList[i]==0:
+                dbTotalPower=0    
+            else:
+                dbTotalPower=10*np.log10(probe[2])
+            
+            worksheet.write_string(3, 2, str(dbTotalPower))
+
         worksheet.set_column('A:A', 20)
         worksheet.set_column('B:B', 20)
         worksheet.set_column('C:C', 20)
+        worksheet.set_column('D:D', 20)
+
+        
         chart = workbook.add_chart({'type': 'scatter'})
         chart.add_series({
             'categories': '='+probeName+'!$A$4:$A$'+str(len(dataList)+4),
@@ -167,9 +182,29 @@ def probeReport(probeList):
                 },
             },
         })
-        worksheet.insert_chart('F1', chart)
+        #creating the axis titles and graph title
+        chart.set_x_axis({
+            'name': 'Wavelength (nm)',
+            'name_font': {'size': 14, 'bold': True},
+            'num_font':  {'italic': True },
+        })
+
+        chart.set_y_axis({
+            'name': probeType+'( dB)',
+            'name_font': {'size': 14, 'bold': True},
+            'num_font':  {'italic': True },
+        })
+
+        chart.set_title({'name': probeName})
+        worksheet.insert_chart('F2', chart)
 
     writer.save()
 
 
+
+def calcTilt(firstWav,lastWav,slope,intercept):
+    firstVal=slope*firstWav + intercept
+    lastVal=slope*lastWav + intercept
+
+    return lastVal-firstVal
 
